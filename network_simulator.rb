@@ -13,12 +13,11 @@ message = ARGV[3]
 
 
 begin
-    raise FileNotFoundException.new unless File.exists?(topology_file_path)
     topology_file = File.open(topology_file_path, "r")
     topology = topology_file.read
     topology_file.close
-rescue FileNotFoundException
-    puts "[ERROR] Topology file not found. Check if file path is correct."
+rescue Exception => e
+    puts "[ERROR] Error while opening topology file. Check if file path is correct and try again."
     exit
 end
 
