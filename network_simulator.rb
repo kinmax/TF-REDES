@@ -90,7 +90,7 @@ nodes.each do |node|
 end
 
 if node1.class == String
-    puts "[ERROR] Origin node is not in topology's nodes list"
+    puts "[ERROR] Source node is not in topology's nodes list"
     exit
 end
 
@@ -103,3 +103,5 @@ if message.empty?
     puts "[ERROR] Message can't be empty."
     exit
 end
+
+manager = RequestsManager.new(nodes, routers, node1, node2, message)

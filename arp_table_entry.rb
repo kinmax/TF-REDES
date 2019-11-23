@@ -1,4 +1,4 @@
-class ArpTableEntry
+class ARPTableEntry
     attr_reader :ip, :mac
 
     def initialize(ip, mac)

@@ -5,7 +5,7 @@ class Router
         @name = name
         @ports = ports
         @router_table = RouterTable.new
-        @arp_table = ArpTable.new
+        @arp_table = ARPTable.new
     end
 
     def same_network?(device)

@@ -8,7 +8,7 @@ class Node
         @cidr = cidr
         @mtu = mtu
         @default_gateway = default_gateway
-        @arp_table = ArpTable.new
+        @arp_table = ARPTable.new
     end
 
     def same_network?(device)

@@ -1,4 +1,4 @@
-class ArpTable
+class ARPTable
     attr_reader :entries
 
     def initialize
@@ -6,7 +6,7 @@ class ArpTable
     end
 
     def add_entry(ip, mac)
-        new_entry = ArpTableEntry.new(ip, mac)
+        new_entry = ARPTableEntry.new(ip, mac)
         @entries << new_entry
     end
 end
