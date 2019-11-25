@@ -1,17 +1,17 @@
 class ICMPTimeExceeded
-    def initialize(src_name, dst_name, src_mac, dst_mac, src_ip, dst_ip, ttl, mf, off)
-        @src_name = src_name
-        @dst_name = dst_name
-        @src_mac = src_mac
-        @dst_mac = dst_mac
-        @src_ip = src_ip
-        @dst_ip = dst_ip
+    attr_accessor :init_src, :src, :dst, :final_dst, :ttl, :mf, :off 
+
+    def initialize(init_src, src, dst, final_dst, ttl, mf, off)
+        @init_src = init_src
+        @src = src
+        @dst = dst
+        @final_dst= final_dst
         @ttl = ttl
         @mf = mf
         @off = off
     end
 
     def to_s
-        "#{src_name} => #{dst_name} : ETH (src=#{src_mac} dst=#{dst_mac}) \n IP (src=#{src_ip} dst=#{dst_ip} ttl=#{ttl} mf=#{mf} off=#{off}) \n ICMP - Time Exceeded;"
+        "#{@src.name} => #{@dst.name} : ETH (src=#{@src.mac} dst=#{@dst.mac}) \\n IP (src=#{@init_src.ip} dst=#{@final_dst.ip} ttl=#{@ttl} mf=#{@mf} off=#{@off}) \\n ICMP - Time Exceeded;"
     end
 end

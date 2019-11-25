@@ -1,14 +1,12 @@
 class ARPReply
-    def initialize(src_name, dst_name, src_mac, dst_mac, src_ip, dst_ip)
-        @src_name = src_name
-        @dst_name = dst_name
-        @src_mac = src_mac
-        @dst_mac = dst_mac
-        @src_ip = src_ip
-        @dst_ip = dst_ip
+    attr_reader :src, :dst
+
+    def initialize(src, dst)
+        @src = src
+        @dst = dst
     end
 
     def to_s
-        "#{src_name} => #{dst_name} : ETH (src=#{src_mac} dst=#{dst_mac}) \n ARP - #{src_ip} is at #{src_mac};"
+        "#{@src.name} => #{@dst.name} : ETH (src=#{@src.mac} dst=#{@dst.mac}) \\n ARP - #{@src.ip} is at #{@src.mac};"
     end
 end

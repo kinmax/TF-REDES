@@ -1,5 +1,4 @@
 Dir["./*.rb"].each {|file| require file }
-require 'byebug'
 
 if ARGV.length < 4
     puts "[ERROR] Wrong usage.\nCorrect usage: ruby network_simulator.rb <topology_file_path> <node_1> <node_2> <message>"
@@ -27,23 +26,6 @@ begin
     routers_string = topology.split("#ROUTER")[1]
     router_tables_string = topology.split("#ROUTERTABLE")[1]
 
-    nodes = [] 
-    nodes_string = nodes_string.split("\n")
-    nodes_string.each do |node_string|
-        next if node_string.empty?
-        break if node_string == "#ROUTER"
-        info = node_string.split(",")
-        node_name = info[0]
-        node_mac = info[1]
-        node_ip = info[2]
-        node_ip = node_ip.split("/")[0]
-        node_cidr = node_ip.split("/")[1].to_i
-        node_mtu = info[3].to_i
-        node_default_gateway = info[4]
-        node = Node.new(node_name, node_mac, node_ip, node_cidr, node_mtu, node_default_gateway)
-        nodes << node
-    end
-
     routers = []
     routers_string = routers_string.split("\n")
     routers_string.each do |router_string|
@@ -56,10 +38,13 @@ begin
         router_ports = []
         router_ports_array = router_ports_string.each_slice(3).to_a
         router_ports_array.each do |router_port_array|
-            router_port = RouterPort.new(router_port_array[0],router_port_array[1].split("/")[0], router_port_array[1].split("/")[1].to_i, router_port_array[2].to_i)
+            router_port = RouterPort.new(router_port_array[0],router_port_array[1].split("/")[0], router_port_array[1].split("/")[1].to_i, router_port_array[2].to_i, router_name)
             router_ports << router_port
         end
         router = Router.new(router_name, router_ports)
+        router.ports.each do |port|
+            port.define_router(router)
+        end
         routers << router
     end
 
@@ -71,7 +56,7 @@ begin
         net_dest = router_table_string.split(",")[1].split("/")[0]
         prefix = router_table_string.split(",")[1].split("/")[1].to_i
         next_hop = router_table_string.split(",")[2]
-        port = router_table_string.split(",")[3]
+        port = router_table_string.split(",")[3].to_i
         routers.each do |router|
             if router.name == router_name
                 router.add_entry_to_router_table(prefix, net_dest, next_hop, port)
@@ -79,7 +64,46 @@ begin
             end
         end
     end
-rescue Exception
+
+    nodes = [] 
+    nodes_string = nodes_string.split("\n")
+    nodes_string.each do |node_string|
+        next if node_string.empty?
+        break if node_string == "#ROUTER"
+        info = node_string.split(",")
+        node_name = info[0]
+        node_mac = info[1]
+        node_ip = info[2]
+        node_ip = node_ip.split("/")[0]
+        node_cidr = info[2].split("/")[1].to_i
+        node_mtu = info[3].to_i
+        node_default_gateway = nil
+        routers.each do |router|
+            router.ports.each do |port|
+                if port.ip == info[4]
+                    node_default_gateway = port
+                end
+            end
+        end
+        raise Exception if node_default_gateway.nil?
+        node = Node.new(node_name, node_mac, node_ip, node_cidr, node_mtu, node_default_gateway)
+        nodes << node
+    end
+
+    nodes.each do |node|
+        node.add_nodes(nodes)
+        node.add_routers(routers)
+    end
+    
+    routers.each do |router|
+        router.ports.each do |port|
+            port.add_nodes(nodes)
+            port.add_routers(routers)
+        end
+    end
+rescue Exception => e
+    puts e.backtrace
+    puts e.message
     puts "[ERROR] Incorrect topology file format."
     exit
 end
@@ -105,3 +129,5 @@ if message.empty?
 end
 
 manager = RequestsManager.new(nodes, routers, node1, node2, message)
+manager.make_requests
+exit

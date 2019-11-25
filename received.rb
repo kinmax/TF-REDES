@@ -1,10 +1,12 @@
 class Received
-    def initialize(node_name, data)
-        @node_name = node_name
+    attr_reader :node, :data
+
+    def initialize(node, data)
+        @node = node
         @data = data
     end
 
     def to_s
-        "#{node_name} rbox #{node_name} : Received #{data};"
+        "#{@node.name} rbox #{@node.name} : Received #{@data};"
     end
 end
