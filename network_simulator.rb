@@ -15,6 +15,8 @@ begin
     topology_file = File.open(topology_file_path, "r")
     topology = topology_file.read
     topology_file.close
+    topology.gsub!("\r\n", "\n")
+    topology.gsub!("\r", "\n")
 rescue Exception => e
     puts "[ERROR] Error while opening topology file. Check if file path is correct and try again."
     exit
